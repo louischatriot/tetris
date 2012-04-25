@@ -8,7 +8,7 @@ var containerId = '#gameContainer'
 
 var pieces = [ [{x: 0, y: 0}, {x: -1, y: 0}, {x: 1, y: 0}, {x: 0, y: 1}]        // T
              , [{x: 0, y: 0}, {x: -1, y: 0}, {x: -2, y: 0}, {x: 1, y: 0}] ]     // Bar
-  , currentPiece = {type: 0, centerX: 0, centerY: 0, minos: []};
+  , currentPiece = {type: 0, centerX: 0, centerY: 0, rotation: [], minos: []};
 
 
 
@@ -48,7 +48,8 @@ var createNewPiece = function() {
     temp.css('height', minoHeight);
     placeMino(temp, pieces[currentPiece.type][i]);
     displayBox.append(temp);
-    currentPiece.minos.push(temp);    // The minos array is in the same order as pieces[currentPiece]
+    currentPiece.minos.push(temp);    // The minos array is in the same order as currentPiece.rotation
+    currentPiece.rotation.push( {x: pieces[currentPiece.type][i].x, y: pieces[currentPiece.type][i].y} );
   }
 }
 
@@ -56,13 +57,12 @@ var createNewPiece = function() {
 // Returns true if the piece hits another piece or the bottom
 var cantMoveAnymore = function() {
   var result = false
-    , movingPiece = pieces[currentPiece.type]
     , theX, theY
     , i;
 
-  for (i = 0; i < movingPiece.length; i += 1) {
-    theX = currentPiece.centerX + movingPiece[i].x;
-    theY = currentPiece.centerY + movingPiece[i].y;
+  for (i = 0; i < currentPiece.rotation.length; i += 1) {
+    theX = currentPiece.centerX + currentPiece.rotation[i].x;
+    theY = currentPiece.centerY + currentPiece.rotation[i].y;
     if ( (matrixState[theX][theY + 1] !== null) || theY >= matrixHeight ) { result = true; }
   }
 
@@ -70,33 +70,44 @@ var cantMoveAnymore = function() {
 }
 
 
-// Make piece move one step towards the bottom
-var makeCurrentPieceMoveOneStep = function() {
-  var movingPiece = pieces[currentPiece.type]
-    , theX, theY
-    , i;
+var refreshCurrentPieceDisplay = function() {
+  var i;
 
-  currentPiece.centerY += 1;
-
-  for (i = 0; i < movingPiece.length; i += 1) {
-    // The minos array is in the same order as movingPiece
-    placeMino(currentPiece.minos[i], movingPiece[i]);
+  for (i = 0; i < currentPiece.rotation.length; i += 1) {
+    // The minos array is in the same order as currentPiece.rotation
+    placeMino(currentPiece.minos[i], currentPiece.rotation[i]);
   }
 }
 
 
-var rotateCurrentPieceLeft = function() {
+// Make piece move one step towards the bottom
+var makeCurrentPieceMoveOneStep = function() {
+  currentPiece.centerY += 1;
 
-
+  refreshCurrentPieceDisplay();
 }
+
+
+var rotateCurrentPieceLeft = function() {
+  var i, temp;
+
+  for (i = 0; i < currentPiece.rotation.length; i += 1) {
+    temp = currentPiece.rotation[i].y;
+    currentPiece.rotation[i].y = - currentPiece.rotation[i].x;
+    currentPiece.rotation[i].x = temp;
+  }
+
+  refreshCurrentPieceDisplay();
+}
+
+
 
 initializeMatrix();
 createNewPiece();
 
-$('#theButton').on('click', makeCurrentPieceMoveOneStep);
+$('#theButton').on('click', rotateCurrentPieceLeft);
 
 
 
-//$('#test').css("width", 200);
 
 
