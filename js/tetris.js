@@ -101,6 +101,20 @@ var rotateCurrentPieceLeft = function() {
 }
 
 
+var rotateCurrentPieceRight = function() {
+  var i, temp;
+
+  for (i = 0; i < currentPiece.rotation.length; i += 1) {
+    temp = currentPiece.rotation[i].y;
+    currentPiece.rotation[i].y = currentPiece.rotation[i].x;
+    currentPiece.rotation[i].x = - temp;
+  }
+
+  refreshCurrentPieceDisplay();
+}
+
+
+
 
 initializeMatrix();
 createNewPiece();
