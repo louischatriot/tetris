@@ -216,6 +216,29 @@ var blockCurrentPiece = function() {
 }
 
 
+var checkAndRemoveLines = function() {
+  var numberLines = 0
+    , linesChecked = {}
+    , i, j
+    , temp;
+
+  for (i = 0; i < currentPiece.rotation.length; i += 1) {
+    if (! linesChecked[ getActualYCoord(currentPiece.rotation[i]) ]) {
+      linesChecked[ getActualYCoord(currentPiece.rotation[i]) ] = true;
+
+      temp = true;
+      for (j = 0; j < matrixWidth; j += 1) {
+        if (matrixState[j][ getActualYCoord(currentPiece.rotation[i]) ] === null) { temp = false; }
+      }
+
+      if (temp) {numberLines += 1};
+    }
+  }
+
+  return numberLines;
+}
+
+
 
 initializeMatrix();
 createNewPiece();
@@ -224,6 +247,7 @@ createNewPiece();
 var moveCurrentPieceDownAndRefresh = function() {
   if (currentPieceCantMoveAnymore()) {
     blockCurrentPiece();
+    console.log(checkAndRemoveLines());
     createNewPiece();
   } else {
     moveCurrentPieceDown();
@@ -232,14 +256,12 @@ var moveCurrentPieceDownAndRefresh = function() {
 }
 
 
+// TODO: add levels support by modifying interval time
 intervalId = setInterval(moveCurrentPieceDownAndRefresh, 200);
 
 
 
-
 $(document).bind('keydown', function(e) {
-
-
   if (e.keyCode === 27) {
     if (! gamePaused) {
       clearInterval(intervalId);
