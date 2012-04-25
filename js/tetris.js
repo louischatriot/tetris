@@ -4,7 +4,8 @@ var containerId = '#gameContainer'
   , minoWidth = 8, minoHeight = 8         // Measured in pixels
   , matrixState = []
   , score, lineCount, currentLevel
-  , i, j;
+  , i, j
+  , intervalId, gamePaused = false;
 
 var pieces = [ [{x: 0, y: 0}, {x: -1, y: 0}, {x: 1, y: 0}, {x: 0, y: 1}]        // T
              , [{x: 0, y: 0}, {x: -1, y: 0}, {x: 2, y: 0}, {x: 1, y: 0}]        // Bar
@@ -78,7 +79,15 @@ var currentPieceCantMoveAnymore = function() {
   for (i = 0; i < currentPiece.rotation.length; i += 1) {
     theX = getActualXCoord( currentPiece.rotation[i] );
     theY = getActualYCoord( currentPiece.rotation[i] );
-    if ( (matrixState[theX][theY + 1] !== null) || theY >= matrixHeight - 1 ) { result = true; }
+
+    if ( matrixState[theX][theY] !== null) {
+      result = true;
+    }
+    if (theY >= matrixHeight - 1) {
+      result = true;
+    } else if (matrixState[theX][theY + 1] !== null) {
+      result = true;
+    }
   }
 
   return result;
@@ -213,40 +222,54 @@ createNewPiece();
 
 
 var moveCurrentPieceDownAndRefresh = function() {
-  moveCurrentPieceDown();
-  refreshCurrentPieceDisplay();
+  if (currentPieceCantMoveAnymore()) {
+    blockCurrentPiece();
+    createNewPiece();
+  } else {
+    moveCurrentPieceDown();
+    refreshCurrentPieceDisplay();
+  }
 }
 
 
-setInterval(moveCurrentPieceDownAndRefresh, 200);
+intervalId = setInterval(moveCurrentPieceDownAndRefresh, 200);
 
 
 
 
 $(document).bind('keydown', function(e) {
-  if (e.keyCode ===32) {
-    blockCurrentPiece();
-    createNewPiece();
+
+
+  if (e.keyCode === 27) {
+    if (! gamePaused) {
+      clearInterval(intervalId);
+      gamePaused = true;
+    } else {
+      intervalId = setInterval(moveCurrentPieceDownAndRefresh, 200);
+      gamePaused = false;
+    }
   }
 
-  if (e.keyCode === 39) {
-    moveCurrentPieceRight();
-    refreshCurrentPieceDisplay();
-  }
+  if (! gamePaused) {
+    if (e.keyCode === 39) {
+      moveCurrentPieceRight();
+      refreshCurrentPieceDisplay();
+    }
 
-  if (e.keyCode === 37) {
-    moveCurrentPieceLeft();
-    refreshCurrentPieceDisplay();
-  }
+    if (e.keyCode === 37) {
+      moveCurrentPieceLeft();
+      refreshCurrentPieceDisplay();
+    }
 
-  if (e.keyCode === 38) {
-    rotateCurrentPieceLeft();
-    refreshCurrentPieceDisplay();
-  }
+    if (e.keyCode === 38) {
+      rotateCurrentPieceLeft();
+      refreshCurrentPieceDisplay();
+    }
 
-  if (e.keyCode === 40) {
-    moveCurrentPieceDown();
-    refreshCurrentPieceDisplay();
+    if (e.keyCode === 40) {
+      moveCurrentPieceDown();
+      refreshCurrentPieceDisplay();
+    }
   }
 });
 
