@@ -1,6 +1,6 @@
 var containerId = '#gameContainer'
   , displayBox = $(containerId)
-  , matrixWidth = 10, matrixHeight = 20     // Measured in number of minos
+  , matrixWidth = 10, matrixHeight = 10     // Measured in number of minos
   , minoWidth = 8, minoHeight = 8         // Measured in pixels
   , matrixState = []
   , score, lineCount, currentLevel
@@ -36,10 +36,12 @@ var placeMino = function(mino, place) {
 var createNewPiece = function() {
   var temp, i;
 
+  // Re-initialize currentPiece
   currentPiece.type = 0;     // TODO randomize piece choice
   currentPiece.centerX = Math.floor(matrixWidth / 2);
   currentPiece.centerY = 1;
   currentPiece.minos = [];
+  currentPiece.rotation = [];
 
   for (i = 0; i < pieces[currentPiece.type].length; i += 1) {
     temp = $(document.createElement('div'));
@@ -55,7 +57,7 @@ var createNewPiece = function() {
 
 
 // Returns true if the piece hits another piece or the bottom
-var cantMoveAnymore = function() {
+var currentPieceCantMoveAnymore = function() {
   var result = false
     , theX, theY
     , i;
@@ -63,8 +65,10 @@ var cantMoveAnymore = function() {
   for (i = 0; i < currentPiece.rotation.length; i += 1) {
     theX = currentPiece.centerX + currentPiece.rotation[i].x;
     theY = currentPiece.centerY + currentPiece.rotation[i].y;
-    if ( (matrixState[theX][theY + 1] !== null) || theY >= matrixHeight ) { result = true; }
+    if ( (matrixState[theX][theY + 1] !== null) || theY >= matrixHeight - 1 ) { result = true; }
   }
+
+  console.log("CANT : " + currentPiece.centerY + " - " + result);
 
   return result;
 }
@@ -84,7 +88,6 @@ var refreshCurrentPieceDisplay = function() {
 var makeCurrentPieceMoveOneStep = function() {
   currentPiece.centerY += 1;
 
-  refreshCurrentPieceDisplay();
 }
 
 
@@ -113,13 +116,33 @@ var rotateCurrentPieceRight = function() {
   refreshCurrentPieceDisplay();
 }
 
+var bloup = function() {
+  var theX, theY
+    , i;
+
+  makeCurrentPieceMoveOneStep();
+  refreshCurrentPieceDisplay();
+
+  if (currentPieceCantMoveAnymore()) {
+    for (i = 0; i < currentPiece.rotation.length; i += 1) {
+      theX = currentPiece.centerX + currentPiece.rotation[i].x;
+      theY = currentPiece.centerY + currentPiece.rotation[i].y;
+
+      matrixState[theX][theY] = currentPiece.minos[i];
+    }
+
+    createNewPiece();
+  }
+
+
+}
 
 
 
 initializeMatrix();
 createNewPiece();
 
-$('#theButton').on('click', rotateCurrentPieceLeft);
+$('#theButton').on('click', bloup);
 
 
 
