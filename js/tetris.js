@@ -68,8 +68,6 @@ var currentPieceCantMoveAnymore = function() {
     if ( (matrixState[theX][theY + 1] !== null) || theY >= matrixHeight - 1 ) { result = true; }
   }
 
-  console.log("CANT : " + currentPiece.centerY + " - " + result);
-
   return result;
 }
 
@@ -85,10 +83,34 @@ var refreshCurrentPieceDisplay = function() {
 
 
 // Make piece move one step towards the bottom
-var makeCurrentPieceMoveOneStep = function() {
+var moveCurrentPieceDown = function() {
   currentPiece.centerY += 1;
-
 }
+
+var moveCurrentPieceLeft = function() {
+  var i, minLeft = matrixWidth;
+
+  for (i = 0; i < currentPiece.rotation.length; i += 1) {
+    minLeft = Math.min(minLeft, currentPiece.centerX + currentPiece.rotation[i].x);
+  }
+
+  if (minLeft > 0) {
+    currentPiece.centerX -= 1;
+  }
+}
+
+var moveCurrentPieceRight = function() {
+  var i, maxLeft = 0;
+
+  for (i = 0; i < currentPiece.rotation.length; i += 1) {
+    maxLeft = Math.max(maxLeft, currentPiece.centerX + currentPiece.rotation[i].x);
+  }
+
+  if (maxLeft < matrixWidth - 1) {
+    currentPiece.centerX += 1;
+  }
+}
+
 
 
 var rotateCurrentPieceLeft = function() {
@@ -120,7 +142,7 @@ var bloup = function() {
   var theX, theY
     , i;
 
-  makeCurrentPieceMoveOneStep();
+  moveCurrentPieceDown();
   refreshCurrentPieceDisplay();
 
   if (currentPieceCantMoveAnymore()) {
@@ -142,10 +164,31 @@ var bloup = function() {
 initializeMatrix();
 createNewPiece();
 
-$('#theButton').on('click', bloup);
+$('#theButton').on('click', moveCurrentPieceRight);
 
 
-$(document).bind('keydown', function() { alert('erwtwer we'); });
+$(document).bind('keydown', function(e) {
+  if (e.keyCode === 39) {
+    moveCurrentPieceRight();
+    refreshCurrentPieceDisplay();
+  }
+
+  if (e.keyCode === 37) {
+    moveCurrentPieceLeft();
+    refreshCurrentPieceDisplay();
+  }
+
+  if (e.keyCode === 38) {
+    rotateCurrentPieceLeft();
+    refreshCurrentPieceDisplay();
+  }
+
+  if (e.keyCode === 40) {
+    bloup();
+    //moveCurrentPieceDown();
+    //refreshCurrentPieceDisplay();
+  }
+});
 
 
 
