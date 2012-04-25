@@ -1,6 +1,6 @@
 var containerId = '#gameContainer'
   , displayBox = $(containerId)
-  , matrixWidth = 10, matrixHeight = 10     // Measured in number of minos
+  , matrixWidth = 10, matrixHeight = 20     // Measured in number of minos
   , minoWidth = 8, minoHeight = 8         // Measured in pixels
   , matrixState = []
   , score, lineCount, currentLevel
@@ -20,6 +20,9 @@ var initializeMatrix = function() {
     for (j = 0; j < matrixHeight; j += 1) { temp.push(null); }
     matrixState.push(temp);
   }
+
+  displayBox.css('width', matrixWidth * minoWidth);
+  displayBox.css('height', matrixHeight * minoHeight);
 }
 
 
