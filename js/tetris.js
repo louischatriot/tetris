@@ -134,13 +134,21 @@ var moveCurrentPieceLeft = function() {
 }
 
 var moveCurrentPieceRight = function() {
-  var i, maxLeft = 0;
+  var i, canMove = true
+    , theX, theY;
 
   for (i = 0; i < currentPiece.rotation.length; i += 1) {
-    maxLeft = Math.max(maxLeft, currentPiece.centerX + currentPiece.rotation[i].x);
+    theX = getActualXCoord( currentPiece.rotation[i] );
+    theY = getActualYCoord( currentPiece.rotation[i] );
+
+    if (theX === matrixWidth - 1) {
+      canMove = false;
+    } else if (matrixState[theX + 1][theY] !== null) {
+      canMove = false;
+    }
   }
 
-  if (maxLeft < matrixWidth - 1) {
+  if (canMove) {
     currentPiece.centerX += 1;
   }
 }
