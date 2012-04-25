@@ -208,7 +208,16 @@ var blockCurrentPiece = function() {
 initializeMatrix();
 createNewPiece();
 
-$('#theButton').on('click', moveCurrentPieceRight);
+
+var moveCurrentPieceDownAndRefresh = function() {
+  moveCurrentPieceDown();
+  refreshCurrentPieceDisplay();
+}
+
+
+setInterval(moveCurrentPieceDownAndRefresh, 200);
+
+
 
 
 $(document).bind('keydown', function(e) {
