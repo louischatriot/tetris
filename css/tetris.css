@@ -1,0 +1,8 @@
+/* T-shaped piece */
+.piece0 {
+  position: absolute;
+  background-color: #444444;
+  /*border-style: solid;*/
+  /*border-color: #ffffff;*/
+  /*border-width: 1px;*/
+}
