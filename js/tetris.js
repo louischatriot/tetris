@@ -11,7 +11,6 @@ var pieces = [ [{x: 0, y: 0}, {x: -1, y: 0}, {x: 1, y: 0}, {x: 0, y: 1}]        
   , currentPiece = {type: 0, centerX: 0, centerY: 0, rotation: [], minos: []};
 
 
-
 // Initialize matrix status to only nulls (empty start state)
 var initializeMatrix = function() {
   var temp;
@@ -29,9 +28,13 @@ var initializeMatrix = function() {
 // Calculate and set a mino's coordinates
 var getLeft = function(x) { return minoWidth * x; }
 var getTop = function(y) { return minoHeight * y; }
+
+var getActualXCoord = function(place) { return currentPiece.centerX + place.x; }
+var getActualYCoord = function(place) { return currentPiece.centerY + place.y; }
+
 var placeMino = function(mino, place) {
-  mino.css('left', getLeft( currentPiece.centerX + place.x ));
-  mino.css('top', getTop( currentPiece.centerY + place.y ));
+  mino.css('left', getLeft( getActualXCoord(place) ));
+  mino.css('top', getTop( getActualYCoord(place) ));
 }
 
 
@@ -46,11 +49,15 @@ var createNewPiece = function() {
   currentPiece.minos = [];
   currentPiece.rotation = [];
 
+  // Just for fun, TODO remove
+  var color = 'rgb(' + Math.floor(Math.random() * 255) + ', ' + Math.floor(Math.random() * 99) + ', ' + Math.floor(Math.random() * 99) +')';
+
   for (i = 0; i < pieces[currentPiece.type].length; i += 1) {
     temp = $(document.createElement('div'));
     temp.attr('class', 'piece' + currentPiece.type);
     temp.css('width', minoWidth);
     temp.css('height', minoHeight);
+    temp.css('background-color', color);
     placeMino(temp, pieces[currentPiece.type][i]);
     displayBox.append(temp);
     currentPiece.minos.push(temp);    // The minos array is in the same order as currentPiece.rotation
@@ -66,8 +73,8 @@ var currentPieceCantMoveAnymore = function() {
     , i;
 
   for (i = 0; i < currentPiece.rotation.length; i += 1) {
-    theX = currentPiece.centerX + currentPiece.rotation[i].x;
-    theY = currentPiece.centerY + currentPiece.rotation[i].y;
+    theX = getActualXCoord( currentPiece.rotation[i] );
+    theY = getActualYCoord( currentPiece.rotation[i] );
     if ( (matrixState[theX][theY + 1] !== null) || theY >= matrixHeight - 1 ) { result = true; }
   }
 
@@ -85,19 +92,43 @@ var refreshCurrentPieceDisplay = function() {
 }
 
 
-// Make piece move one step towards the bottom
+// Make piece move one step towards the bottom, if it's not blocked by another piece or the floor
 var moveCurrentPieceDown = function() {
-  currentPiece.centerY += 1;
+  var canMove = true
+    , theX, theY
+    , i;
+
+  for (i = 0; i < currentPiece.rotation.length; i += 1) {
+    theX = getActualXCoord( currentPiece.rotation[i] );
+    theY = getActualYCoord( currentPiece.rotation[i] );
+
+    if (theY >= matrixHeight - 1) {
+      canMove = false;
+    } else if (matrixState[theX][theY + 1] !== null) {
+      canMove = false;
+    }
+  }
+
+  if (canMove) { currentPiece.centerY += 1; }
 }
 
 var moveCurrentPieceLeft = function() {
-  var i, minLeft = matrixWidth;
+  var i, canMove = true
+    , theX, theY;
+
 
   for (i = 0; i < currentPiece.rotation.length; i += 1) {
-    minLeft = Math.min(minLeft, currentPiece.centerX + currentPiece.rotation[i].x);
+    theX = getActualXCoord( currentPiece.rotation[i] );
+    theY = getActualYCoord( currentPiece.rotation[i] );
+
+    if (theX === 0) {
+      canMove = false;
+    } else if (matrixState[theX - 1][theY] !== null) {
+      canMove = false;
+    }
   }
 
-  if (minLeft > 0) {
+  if (canMove) {
     currentPiece.centerX -= 1;
   }
 }
@@ -141,25 +172,16 @@ var rotateCurrentPieceRight = function() {
   refreshCurrentPieceDisplay();
 }
 
-var bloup = function() {
+var blockCurrentPiece = function() {
   var theX, theY
     , i;
 
-  moveCurrentPieceDown();
-  refreshCurrentPieceDisplay();
+  for (i = 0; i < currentPiece.rotation.length; i += 1) {
+    theX = getActualXCoord( currentPiece.rotation[i] );
+    theY = getActualYCoord( currentPiece.rotation[i] );
 
-  if (currentPieceCantMoveAnymore()) {
-    for (i = 0; i < currentPiece.rotation.length; i += 1) {
-      theX = currentPiece.centerX + currentPiece.rotation[i].x;
-      theY = currentPiece.centerY + currentPiece.rotation[i].y;
-
-      matrixState[theX][theY] = currentPiece.minos[i];
-    }
-
-    createNewPiece();
+    matrixState[theX][theY] = currentPiece.minos[i];
   }
-
-
 }
 
 
@@ -171,6 +193,11 @@ $('#theButton').on('click', moveCurrentPieceRight);
 
 
 $(document).bind('keydown', function(e) {
+  if (e.keyCode ===32) {
+    blockCurrentPiece();
+    createNewPiece();
+  }
+
   if (e.keyCode === 39) {
     moveCurrentPieceRight();
     refreshCurrentPieceDisplay();
@@ -187,9 +214,8 @@ $(document).bind('keydown', function(e) {
   }
 
   if (e.keyCode === 40) {
-    bloup();
-    //moveCurrentPieceDown();
-    //refreshCurrentPieceDisplay();
+    moveCurrentPieceDown();
+    refreshCurrentPieceDisplay();
   }
 });
 
