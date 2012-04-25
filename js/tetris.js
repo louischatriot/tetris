@@ -145,6 +145,8 @@ createNewPiece();
 $('#theButton').on('click', bloup);
 
 
+$(document).bind('keydown', function() { alert('erwtwer we'); });
+
 
 
 
