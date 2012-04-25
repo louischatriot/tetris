@@ -156,15 +156,28 @@ var moveCurrentPieceRight = function() {
 
 
 var rotateCurrentPieceLeft = function() {
-  var i, temp;
+  var i, temp
+    , theX, theY
+    , canMove = true;
 
   for (i = 0; i < currentPiece.rotation.length; i += 1) {
-    temp = currentPiece.rotation[i].y;
-    currentPiece.rotation[i].y = - currentPiece.rotation[i].x;
-    currentPiece.rotation[i].x = temp;
+    theX = currentPiece.centerX + currentPiece.rotation[i].y;
+    theY = currentPiece.centerY - currentPiece.rotation[i].x;
+
+    if ( (theX < 0) || (theX >= matrixWidth) || (theY >= matrixHeight) || (theY < 0) ) {
+      canMove = false;
+    } else if (matrixState[theX][theY] !== null) {
+      canMove = false;
+    }
   }
 
-  refreshCurrentPieceDisplay();
+  if (canMove) {
+    for (i = 0; i < currentPiece.rotation.length; i += 1) {
+      temp = currentPiece.rotation[i].y;
+      currentPiece.rotation[i].y = - currentPiece.rotation[i].x;
+      currentPiece.rotation[i].x = temp;
+    }
+  }
 }
 
 
@@ -176,8 +189,6 @@ var rotateCurrentPieceRight = function() {
     currentPiece.rotation[i].y = currentPiece.rotation[i].x;
     currentPiece.rotation[i].x = - temp;
   }
-
-  refreshCurrentPieceDisplay();
 }
 
 var blockCurrentPiece = function() {
