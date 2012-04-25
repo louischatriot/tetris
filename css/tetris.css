@@ -2,9 +2,21 @@
 .piece0 {
   position: absolute;
   background-color: #444444;
-  /*border-style: solid;*/
-  /*border-color: #ffffff;*/
-  /*border-width: 1px;*/
+}
+
+.piece1 {
+  position: absolute;
+  background-color: #884444;
+}
+
+.piece2 {
+  position: absolute;
+  background-color: #444488;
+}
+
+.piece3 {
+  position: absolute;
+  background-color: #448844;
 }
 
 

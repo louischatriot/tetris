@@ -7,7 +7,10 @@ var containerId = '#gameContainer'
   , i, j;
 
 var pieces = [ [{x: 0, y: 0}, {x: -1, y: 0}, {x: 1, y: 0}, {x: 0, y: 1}]        // T
-             , [{x: 0, y: 0}, {x: -1, y: 0}, {x: -2, y: 0}, {x: 1, y: 0}] ]     // Bar
+             , [{x: 0, y: 0}, {x: -1, y: 0}, {x: 2, y: 0}, {x: 1, y: 0}]        // Bar
+             , [{x: 0, y: 1}, {x: 0, y: 0}, {x: 1, y: 0}, {x: 2, y: 0}]        // L
+             , [{x: 0, y: 1}, {x: 0, y: 0}, {x: -1, y: 0}, {x: -2, y: 0}] ]        // Inverted L
+
   , currentPiece = {type: 0, centerX: 0, centerY: 0, rotation: [], minos: []};
 
 
@@ -43,7 +46,7 @@ var createNewPiece = function() {
   var temp, i;
 
   // Re-initialize currentPiece
-  currentPiece.type = 0;     // TODO randomize piece choice
+  currentPiece.type = Math.floor(Math.random() * pieces.length);     // TODO randomize piece choice
   currentPiece.centerX = Math.floor(matrixWidth / 2);
   currentPiece.centerY = 1;
   currentPiece.minos = [];
