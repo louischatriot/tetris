@@ -219,9 +219,11 @@ var blockCurrentPiece = function() {
 var checkAndRemoveLines = function() {
   var numberLines = 0
     , linesChecked = {}
-    , i, j
+    , linesToRemove = []
+    , i, j, k
     , temp;
 
+  // Calculate number of lines and Y-coord of lines to remove
   for (i = 0; i < currentPiece.rotation.length; i += 1) {
     if (! linesChecked[ getActualYCoord(currentPiece.rotation[i]) ]) {
       linesChecked[ getActualYCoord(currentPiece.rotation[i]) ] = true;
@@ -231,7 +233,54 @@ var checkAndRemoveLines = function() {
         if (matrixState[j][ getActualYCoord(currentPiece.rotation[i]) ] === null) { temp = false; }
       }
 
-      if (temp) {numberLines += 1};
+      if (temp) {
+        numberLines += 1;
+        linesToRemove.push(getActualYCoord(currentPiece.rotation[i]));
+      }
+    }
+  }
+
+  linesToRemove.sort();
+  console.log(linesToRemove);
+
+  // Remove lines made
+  for (k = 0; k < linesToRemove.length; k += 1) {
+    for (i = 0; i < matrixWidth; i += 1) {
+      matrixState[i][linesToRemove[k]].remove();
+      matrixState[i][linesToRemove[k]] = null;
+    }
+  }
+
+  // Collapse matrix
+  for (k = 0; k < linesToRemove.length; k += 1) {
+    console.log("======== " + linesToRemove[k]);
+
+    for (j = linesToRemove[k] - 1; j >= 0; j -= 1) {
+      console.log(j);
+
+      i = 0;
+      //for (i = 0; i < matrixWidth; i += 1) {
+        console.log(matrixState[i][j]);
+        console.log(matrixState[i][j + 1]);
+
+
+        if (matrixState[i][j] !== null) {
+          console.log(matrixState[i][j].css('top'))
+          matrixState[i][j].css('top', getTop(j + 1));
+
+          console.log("--- --- ---");
+          console.log(matrixState[i][j].css('top'))
+        }
+        matrixState[i][j + 1] = matrixState[i][j];
+
+
+        console.log(matrixState[i][j]);
+        console.log(matrixState[i][j + 1]);
+
+alert('ewewee');
+
+        //matrixState[i][j] = null;
+      //}
     }
   }
 
@@ -272,6 +321,12 @@ $(document).bind('keydown', function(e) {
     }
   }
 
+  if (e.keyCode === 32) {
+    console.log(matrixState);
+    console.log("===============");
+  }
+
+
   if (! gamePaused) {
     if (e.keyCode === 39) {
       moveCurrentPieceRight();
@@ -297,4 +352,4 @@ $(document).bind('keydown', function(e) {
 
 
 
-
+console.log([18, 19, 17].sort());
