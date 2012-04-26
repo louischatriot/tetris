@@ -9,8 +9,8 @@ var containerId = '#gameContainer'
 
 var pieces = [ [{x: 0, y: 0}, {x: -1, y: 0}, {x: 1, y: 0}, {x: 0, y: 1}]        // T
              , [{x: 0, y: 0}, {x: -1, y: 0}, {x: 2, y: 0}, {x: 1, y: 0}]        // Bar
-             , [{x: 0, y: 1}, {x: 0, y: 0}, {x: 1, y: 0}, {x: 2, y: 0}]        // L
-             , [{x: 0, y: 1}, {x: 0, y: 0}, {x: -1, y: 0}, {x: -2, y: 0}] ]        // Inverted L
+             , [{x: -1, y: 0}, {x: 0, y: 0}, {x: -1, y: 1}, {x: 1, y: 0}]        // L
+             , [{x: -1, y: 0}, {x: 0, y: 0}, {x: 1, y: 0}, {x: 1, y: 1}] ]        // Inverted L
 
   , currentPiece = {type: 0, centerX: 0, centerY: 0, rotation: [], minos: []};
 
