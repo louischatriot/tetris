@@ -259,7 +259,7 @@ var checkAndRemoveLines = function() {
       console.log(j);
 
       i = 0;
-      //for (i = 0; i < matrixWidth; i += 1) {
+      for (i = 0; i < matrixWidth; i += 1) {
         console.log(matrixState[i][j]);
         console.log(matrixState[i][j + 1]);
 
@@ -277,10 +277,10 @@ var checkAndRemoveLines = function() {
         console.log(matrixState[i][j]);
         console.log(matrixState[i][j + 1]);
 
-alert('ewewee');
+//alert('ewewee');
 
         //matrixState[i][j] = null;
-      //}
+      }
     }
   }
 
