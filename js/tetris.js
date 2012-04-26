@@ -59,9 +59,14 @@ var createNewPiece = function() {
   for (i = 0; i < pieces[currentPiece.type].length; i += 1) {
     temp = $(document.createElement('div'));
     temp.attr('class', 'piece' + currentPiece.type);
+
+    //temp.css('border-style', 'solid');
+    //temp.css('border-width', 'thin');
+    //temp.css('border-color', '#ffffff');
+
     temp.css('width', minoWidth);
     temp.css('height', minoHeight);
-    temp.css('background-color', color);
+    //temp.css('background-color', color);
     placeMino(temp, pieces[currentPiece.type][i]);
     displayBox.append(temp);
     currentPiece.minos.push(temp);    // The minos array is in the same order as currentPiece.rotation
