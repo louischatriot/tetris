@@ -241,7 +241,6 @@ var checkAndRemoveLines = function() {
   }
 
   linesToRemove.sort();
-  console.log(linesToRemove);
 
   // Remove lines made
   for (k = 0; k < linesToRemove.length; k += 1) {
@@ -253,33 +252,12 @@ var checkAndRemoveLines = function() {
 
   // Collapse matrix
   for (k = 0; k < linesToRemove.length; k += 1) {
-    console.log("======== " + linesToRemove[k]);
-
     for (j = linesToRemove[k] - 1; j >= 0; j -= 1) {
-      console.log(j);
-
-      i = 0;
       for (i = 0; i < matrixWidth; i += 1) {
-        console.log(matrixState[i][j]);
-        console.log(matrixState[i][j + 1]);
-
-
         if (matrixState[i][j] !== null) {
-          console.log(matrixState[i][j].css('top'))
           matrixState[i][j].css('top', getTop(j + 1));
-
-          console.log("--- --- ---");
-          console.log(matrixState[i][j].css('top'))
         }
         matrixState[i][j + 1] = matrixState[i][j];
-
-
-        console.log(matrixState[i][j]);
-        console.log(matrixState[i][j + 1]);
-
-//alert('ewewee');
-
-        //matrixState[i][j] = null;
       }
     }
   }
