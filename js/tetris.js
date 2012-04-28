@@ -9,8 +9,10 @@ var containerId = '#gameContainer'
 
 var pieces = [ [{x: 0, y: 0}, {x: -1, y: 0}, {x: 1, y: 0}, {x: 0, y: 1}]        // T
              , [{x: 0, y: 0}, {x: -1, y: 0}, {x: 2, y: 0}, {x: 1, y: 0}]        // Bar
-             , [{x: -1, y: 0}, {x: 0, y: 0}, {x: -1, y: 1}, {x: 1, y: 0}]        // L
-             , [{x: -1, y: 0}, {x: 0, y: 0}, {x: 1, y: 0}, {x: 1, y: 1}] ]        // Inverted L
+             , [{x: -1, y: 0}, {x: 0, y: 0}, {x: -1, y: 1}, {x: 1, y: 0}]       // L
+             , [{x: -1, y: 0}, {x: 0, y: 0}, {x: 1, y: 0}, {x: 1, y: 1}]        // Inverted L
+             , [{x: -1, y: 0}, {x: 0, y: 0}, {x: 1, y: 0}, {x: 1, y: 1}]        // N
+             , [{x: -1, y: 0}, {x: 0, y: 0}, {x: 1, y: 0}, {x: 1, y: 1}] ]      // Inverted N
 
   , currentPiece = {type: 0, centerX: 0, centerY: 0, rotation: [], minos: []};
 
@@ -128,6 +130,39 @@ var moveCurrentPieceDown = function() {
 
   if (canMove) { currentPiece.centerY += 1; }
 }
+
+// Same than before but we go all the way down 
+var moveCurrentPieceAllTheWayDown = function() {
+  var theX, theY, i, j
+    , newCenterY = -1     // Initialize at an impossible value for first check
+    , tentativeCenterY
+    , found;
+
+  for (i = 0; i < currentPiece.rotation.length; i += 1) {
+    theX = getActualXCoord( currentPiece.rotation[i] );
+    theY = getActualYCoord( currentPiece.rotation[i] );
+
+    found = false;
+    tentativeCenterY = matrixHeight - 1 - currentPiece.rotation[i].y;   // Value if only null values are encoutered in the column
+    for (j = theY + 1; j <= matrixHeight - 1; j += 1 ) {
+      if (! found) {
+        if (matrixState[theX][j] !== null) {
+          found = true;
+          tentativeCenterY = j - currentPiece.rotation[i].y - 1;
+        }
+      }
+    }
+
+    if (newCenterY === -1) {
+      newCenterY = tentativeCenterY
+    } else {
+      newCenterY = Math.min(newCenterY, tentativeCenterY);
+    }
+  }
+
+  currentPiece.centerY = newCenterY;
+}
+
 
 var moveCurrentPieceLeft = function() {
   var i, canMove = true
@@ -304,13 +339,15 @@ $(document).bind('keydown', function(e) {
     }
   }
 
-  if (e.keyCode === 32) {
-    console.log(matrixState);
-    console.log("===============");
-  }
-
-
   if (! gamePaused) {
+    if (e.keyCode === 32) {
+      moveCurrentPieceAllTheWayDown();
+      refreshCurrentPieceDisplay();
+      blockCurrentPiece();
+      checkAndRemoveLines();
+      createNewPiece();
+    }
+
     if (e.keyCode === 39) {
       moveCurrentPieceRight();
       refreshCurrentPieceDisplay();
@@ -335,4 +372,3 @@ $(document).bind('keydown', function(e) {
 
 
 
-console.log([18, 19, 17].sort());
