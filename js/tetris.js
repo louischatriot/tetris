@@ -11,9 +11,11 @@ var pieces = [ [{x: 0, y: 0}, {x: -1, y: 0}, {x: 1, y: 0}, {x: 0, y: 1}]        
              , [{x: 0, y: 0}, {x: -1, y: 0}, {x: 2, y: 0}, {x: 1, y: 0}]        // Bar
              , [{x: -1, y: 0}, {x: 0, y: 0}, {x: -1, y: 1}, {x: 1, y: 0}]       // L
              , [{x: -1, y: 0}, {x: 0, y: 0}, {x: 1, y: 0}, {x: 1, y: 1}]        // Inverted L
-             , [{x: -1, y: 0}, {x: 0, y: 0}, {x: 1, y: 0}, {x: 1, y: 1}]        // N
-             , [{x: -1, y: 0}, {x: 0, y: 0}, {x: 1, y: 0}, {x: 1, y: 1}] ]      // Inverted N
+             , [{x: -1, y: 0}, {x: 0, y: 0}, {x: 0, y: 1}, {x: 1, y: 1}]        // N
+             , [{x: 1, y: 0}, {x: 0, y: 0}, {x: 0, y: 1}, {x: -1, y: 1}]       // Inverted N
+             , [{x: 0, y: 0}, {x: 1, y: 0}, {x: 0, y: 1}, {x: 1, y: 1}] ]      // Square
 
+  , squareType = 6    // Used to prevent the square from rotating
   , currentPiece = {type: 0, centerX: 0, centerY: 0, rotation: [], minos: []};
 
 
@@ -211,6 +213,9 @@ var rotateCurrentPieceLeft = function() {
   var i, temp
     , theX, theY
     , canMove = true;
+
+  if (currentPiece.type === squareType) { return; }   // Don't rotate square
+
 
   for (i = 0; i < currentPiece.rotation.length; i += 1) {
     theX = currentPiece.centerX + currentPiece.rotation[i].y;

@@ -19,6 +19,21 @@
   background-color: #448844;
 }
 
+.piece4 {
+  position: absolute;
+  background-color: #448888;
+}
+
+.piece5 {
+  position: absolute;
+  background-color: #888844;
+}
+
+.piece6 {
+  position: absolute;
+  background-color: #888888;
+}
+
 
 #gameContainer {
   position: absolute;
