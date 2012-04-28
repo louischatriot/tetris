@@ -312,6 +312,8 @@ var checkAndRemoveLines = function() {
 
 
 var updateHUD = function(linesMade) {
+  var formerLevel = currentLevel;
+
   lineCount += linesMade;
   $('#lineCountContainer').html('Lines: ' + lineCount);
 
@@ -320,8 +322,12 @@ var updateHUD = function(linesMade) {
 
   score += currentLevel * scorePerNumberOfLines[linesMade];
   $('#scoreContainer').html('Score: ' + score);
-}
 
+  if (formerLevel !== currentLevel) {
+    clearInterval(intervalId);
+    intervalId = setInterval(moveCurrentPieceDownAndRefresh, 200 / (currentLevel));
+  }
+}
 
 
 initializeMatrix();
@@ -340,7 +346,6 @@ var moveCurrentPieceDownAndRefresh = function() {
 }
 
 
-// TODO: add levels support by modifying interval time
 intervalId = setInterval(moveCurrentPieceDownAndRefresh, 200);
 
 
