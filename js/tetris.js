@@ -3,7 +3,8 @@ var containerId = '#gameContainer'
   , matrixWidth = 10, matrixHeight = 20     // Measured in number of minos
   , minoWidth = 8, minoHeight = 8         // Measured in pixels
   , matrixState = []
-  , score, lineCount, currentLevel
+  , score = 0, lineCount = 0, currentLevel = 1
+  , scorePerNumberOfLines = [0, 80, 200, 400, 1000]
   , i, j
   , intervalId, gamePaused = false;
 
@@ -208,7 +209,6 @@ var moveCurrentPieceRight = function() {
 }
 
 
-
 var rotateCurrentPieceLeft = function() {
   var i, temp
     , theX, theY
@@ -307,7 +307,19 @@ var checkAndRemoveLines = function() {
     }
   }
 
-  return numberLines;
+  updateHUD(numberLines);
+}
+
+
+var updateHUD = function(linesMade) {
+  lineCount += linesMade;
+  $('#lineCountContainer').html('Lines: ' + lineCount);
+
+  currentLevel = Math.floor(lineCount / 10) + 1;
+  $('#levelContainer').html('Level: ' + currentLevel);
+
+  score += currentLevel * scorePerNumberOfLines[linesMade];
+  $('#scoreContainer').html('Score: ' + score);
 }
 
 
