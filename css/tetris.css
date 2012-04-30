@@ -45,24 +45,18 @@
 
 #scoreContainer {
   position: absolute;
-  top: 20;
-  left: 100;
   font-family: 'Verdana';
   font-size: 10px;
 }
 
 #lineCountContainer {
   position: absolute;
-  top: 40;
-  left: 100;
   font-family: 'Verdana';
   font-size: 10px;
 }
 
 #levelContainer {
   position: absolute;
-  top: 60;
-  left: 100;
   font-family: 'Verdana';
   font-size: 10px;
 }

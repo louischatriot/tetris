@@ -1,13 +1,11 @@
 var containerId = '#gameContainer', scoreContainerId = '#scoreContainer', lineCountContainerId = '#lineCountContainer', levelContainerId = '#levelContainer'
   , matrixWidth = 10, matrixHeight = 20     // Measured in number of minos
   , minoWidth = 8, minoHeight = 8           // Measured in pixels
-  , leftZero = 0, topZero = 0;
+  , leftZero = 120, topZero = 20
+  , HUDLeftOffset = 20, HUDTopOffset = 20, HUDLineOffset = 20;
 
-var displayBox = $(containerId)
-  , matrixState = []
-  , score = 0, lineCount = 0, currentLevel = 1
-  , intervalId, gamePaused = false
-  , i, j;
+var displayBox = $(containerId), scoreBox = $(scoreContainerId), lineCountBox = $(lineCountContainerId), levelBox = $(levelContainerId)
+  , matrixState = [], score = 0, lineCount = 0, currentLevel = 1, intervalId, gamePaused = false, i, j;
 
 var pieces = [ [{x: 0, y: 0}, {x: -1, y: 0}, {x: 1, y: 0}, {x: 0, y: 1}]        // T
              , [{x: 0, y: 0}, {x: -1, y: 0}, {x: 2, y: 0}, {x: 1, y: 0}]        // Bar
@@ -25,6 +23,7 @@ var pieces = [ [{x: 0, y: 0}, {x: -1, y: 0}, {x: 1, y: 0}, {x: 0, y: 1}]        
 // Initialize matrix status to only nulls (empty start state) and place HUD items
 var initializeGame = function() {
   var temp;
+
   for (i = 0; i < matrixWidth; i += 1) {
     temp = [];
     for (j = 0; j < matrixHeight; j += 1) { temp.push(null); }
@@ -33,15 +32,22 @@ var initializeGame = function() {
 
   displayBox.css('width', matrixWidth * minoWidth);
   displayBox.css('height', matrixHeight * minoHeight);
-  displayBox.css('left', getLeft(0));
-  displayBox.css('top', getTop(0));
+  displayBox.css('left', leftZero);
+  displayBox.css('top', topZero);
 
+  scoreBox.css('left', leftZero + matrixWidth * minoWidth + HUDLeftOffset);
+  lineCountBox.css('left', leftZero + matrixWidth * minoWidth + HUDLeftOffset);
+  levelBox.css('left', leftZero + matrixWidth * minoWidth + HUDLeftOffset);
+
+  scoreBox.css('top', topZero + HUDTopOffset);
+  lineCountBox.css('top', topZero + HUDTopOffset + HUDLineOffset);
+  levelBox.css('top', topZero + HUDTopOffset + 2 * HUDLineOffset);
 }
 
 
 // Calculate and set a mino's coordinates
-var getLeft = function(x) { return leftZero + (minoWidth * x); }
-var getTop = function(y) { return topZero + (minoHeight * y); }
+var getLeft = function(x) { return minoWidth * x; }
+var getTop = function(y) { return minoHeight * y; }
 
 var getActualXCoord = function(place) { return currentPiece.centerX + place.x; }
 var getActualYCoord = function(place) { return currentPiece.centerY + place.y; }
@@ -77,56 +83,29 @@ var createNewPiece = function() {
 }
 
 
-var iterateOnCurrentPiece = function(fn) {
-  var theX, theY;
+// Returns true if the piece hits another piece or the bottom
+var currentPieceCantMoveAnymore = function() {
+  var result = false, theX, theY;
 
   for (i = 0; i < currentPiece.rotation.length; i += 1) {
     theX = getActualXCoord( currentPiece.rotation[i] );
     theY = getActualYCoord( currentPiece.rotation[i] );
-    fn(theX, theY);
+
+    if ( matrixState[theX][theY] !== null) {
+      result = true;
+    }
+    if (theY >= matrixHeight - 1) {
+      result = true;
+    } else if (matrixState[theX][theY + 1] !== null) {
+      result = true;
+    }
   }
-}
-
-
-// Returns true if the piece hits another piece or the bottom
-var currentPieceCantMoveAnymore = function() {
-  var result = false
-    //, theX, theY
-    //, i;
-
-  iterateOnCurrentPiece(function(xc, yc) { 
-    if ( matrixState[xc][yc] !== null) {
-      result = true;
-    }
-    if (yc >= matrixHeight - 1) {
-      result = true;
-    } else if (matrixState[xc][yc + 1] !== null) {
-      result = true;
-    }
-  });
-
-
-  //for (i = 0; i < currentPiece.rotation.length; i += 1) {
-    //theX = getActualXCoord( currentPiece.rotation[i] );
-    //theY = getActualYCoord( currentPiece.rotation[i] );
-
-    //if ( matrixState[theX][theY] !== null) {
-      //result = true;
-    //}
-    //if (theY >= matrixHeight - 1) {
-      //result = true;
-    //} else if (matrixState[theX][theY + 1] !== null) {
-      //result = true;
-    //}
-  //}
 
   return result;
 }
 
 
 var refreshCurrentPieceDisplay = function() {
-  var i;
-
   for (i = 0; i < currentPiece.rotation.length; i += 1) {
     // The minos array is in the same order as currentPiece.rotation
     placeMino(currentPiece.minos[i], currentPiece.rotation[i]);
@@ -136,9 +115,7 @@ var refreshCurrentPieceDisplay = function() {
 
 // Make piece move one step towards the bottom, if it's not blocked by another piece or the floor
 var moveCurrentPieceDown = function() {
-  var canMove = true
-    , theX, theY
-    , i;
+  var canMove = true, theX, theY;
 
   for (i = 0; i < currentPiece.rotation.length; i += 1) {
     theX = getActualXCoord( currentPiece.rotation[i] );
@@ -156,10 +133,7 @@ var moveCurrentPieceDown = function() {
 
 // Same than before but we go all the way down 
 var moveCurrentPieceAllTheWayDown = function() {
-  var theX, theY, i, j
-    , newCenterY = -1     // Initialize at an impossible value for first check
-    , tentativeCenterY
-    , found;
+  var theX, theY, tentativeCenterY, found, newCenterY = -1;     // Initialize newCenterY at an impossible value for first check
 
   for (i = 0; i < currentPiece.rotation.length; i += 1) {
     theX = getActualXCoord( currentPiece.rotation[i] );
@@ -188,9 +162,7 @@ var moveCurrentPieceAllTheWayDown = function() {
 
 
 var moveCurrentPieceLeft = function() {
-  var i, canMove = true
-    , theX, theY;
-
+  var canMove = true, theX, theY;
 
   for (i = 0; i < currentPiece.rotation.length; i += 1) {
     theX = getActualXCoord( currentPiece.rotation[i] );
@@ -209,8 +181,7 @@ var moveCurrentPieceLeft = function() {
 }
 
 var moveCurrentPieceRight = function() {
-  var i, canMove = true
-    , theX, theY;
+  var canMove = true, theX, theY;
 
   for (i = 0; i < currentPiece.rotation.length; i += 1) {
     theX = getActualXCoord( currentPiece.rotation[i] );
@@ -230,12 +201,9 @@ var moveCurrentPieceRight = function() {
 
 
 var rotateCurrentPieceLeft = function() {
-  var i, temp
-    , theX, theY
-    , canMove = true;
+  var temp, theX, theY, canMove = true;
 
   if (currentPiece.type === squareType) { return; }   // Don't rotate square
-
 
   for (i = 0; i < currentPiece.rotation.length; i += 1) {
     theX = currentPiece.centerX + currentPiece.rotation[i].y;
@@ -259,8 +227,7 @@ var rotateCurrentPieceLeft = function() {
 
 
 var blockCurrentPiece = function() {
-  var theX, theY
-    , i;
+  var theX, theY;
 
   for (i = 0; i < currentPiece.rotation.length; i += 1) {
     theX = getActualXCoord( currentPiece.rotation[i] );
@@ -272,11 +239,7 @@ var blockCurrentPiece = function() {
 
 
 var checkAndRemoveLines = function() {
-  var numberLines = 0
-    , linesChecked = {}
-    , linesToRemove = []
-    , i, j, k
-    , temp;
+  var numberLines = 0, linesChecked = {}, linesToRemove = [], k, temp;
 
   // Calculate number of lines and Y-coord of lines to remove
   for (i = 0; i < currentPiece.rotation.length; i += 1) {
