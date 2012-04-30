@@ -8,7 +8,7 @@ var containerId = '#gameContainer', scoreContainerId = '#scoreContainer', lineCo
   , currentSpeed = 200;
 
 var displayBox = $(containerId), scoreBox = $(scoreContainerId), lineCountBox = $(lineCountContainerId), levelBox = $(levelContainerId)
-  , matrixState = [], score = 0, lineCount = 0, currentLevel = 1, intervalId, gamePaused = false, gameFinished = false, i, j;
+  , matrixState = [], score = 0, lineCount = 0, currentLevel = 1, intervalId, gamePaused = false, gameFinished = false, inBlockZone = false, i, j;
 
 var pieces = [ [{x: 0, y: 0}, {x: -1, y: 0}, {x: 1, y: 0}, {x: 0, y: 1}]        // T
              , [{x: 0, y: 0}, {x: -1, y: 0}, {x: 2, y: 0}, {x: 1, y: 0}]        // Bar
@@ -311,32 +311,45 @@ var checkAndRemoveLines = function() {
 }
 
 
+var changeSpeed = function(newSpeed) {
+  clearInterval(intervalId);
+  intervalId = setInterval(moveCurrentPieceDownAndRefresh, newSpeed);
+}
+
 var updateHUD = function(linesMade) {
   var formerLevel = currentLevel;
 
   lineCount += linesMade;
   lineCountBox.html('Lines: ' + lineCount);
 
-  currentLevel = Math.floor(lineCount / 2) + 1;
+  currentLevel = Math.floor(lineCount / 10) + 1;
   levelBox.html('Level: ' + currentLevel);
 
   score += currentLevel * scorePerNumberOfLines[linesMade];
   scoreBox.html('Score: ' + score);
 
-  if (formerLevel !== currentLevel) {
-    clearInterval(intervalId);
-    currentSpeed = 1000 / (4 + currentLevel);
-    intervalId = setInterval(moveCurrentPieceDownAndRefresh, currentSpeed);
-  }
+  currentSpeed = 1000 / (4 + currentLevel);
+  changeSpeed(currentSpeed);
 }
 
 
+// Block zone: when you can still move the piece although its next to the one beneath
 var moveCurrentPieceDownAndRefresh = function() {
   if (currentPieceCantMoveAnymore()) {
-    blockCurrentPiece();
-    console.log(checkAndRemoveLines());
-    createNewPiece();
+    if (inBlockZone) {
+      blockCurrentPiece();
+      checkAndRemoveLines();
+      createNewPiece();
+      inBlockZone = false;
+    } else {
+      inBlockZone = true;
+      changeSpeed(currentSpeed * 2);
+    }
   } else {
+    if (inBlockZone) {
+      inBlockZone = false;
+      changeSpeed(currentSpeed);
+    }
     moveCurrentPieceDown();
     refreshCurrentPieceDisplay();
   }
