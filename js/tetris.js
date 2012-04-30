@@ -4,7 +4,8 @@ var containerId = '#gameContainer', scoreContainerId = '#scoreContainer', lineCo
   , matrixWidth = 10, matrixHeight = 20     // Measured in number of minos
   , minoWidth = 8, minoHeight = 8           // Measured in pixels
   , leftZero = 120, topZero = 20
-  , HUDLeftOffset = 20, HUDTopOffset = 60, HUDLineOffset = 20;
+  , HUDLeftOffset = 20, HUDTopOffset = 60, HUDLineOffset = 20
+  , currentSpeed = 200;
 
 var displayBox = $(containerId), scoreBox = $(scoreContainerId), lineCountBox = $(lineCountContainerId), levelBox = $(levelContainerId)
   , matrixState = [], score = 0, lineCount = 0, currentLevel = 1, intervalId, gamePaused = false, gameFinished = false, i, j;
@@ -316,7 +317,7 @@ var updateHUD = function(linesMade) {
   lineCount += linesMade;
   lineCountBox.html('Lines: ' + lineCount);
 
-  currentLevel = Math.floor(lineCount / 10) + 1;
+  currentLevel = Math.floor(lineCount / 2) + 1;
   levelBox.html('Level: ' + currentLevel);
 
   score += currentLevel * scorePerNumberOfLines[linesMade];
@@ -324,7 +325,8 @@ var updateHUD = function(linesMade) {
 
   if (formerLevel !== currentLevel) {
     clearInterval(intervalId);
-    intervalId = setInterval(moveCurrentPieceDownAndRefresh, 1000 / (4 + currentLevel));
+    currentSpeed = 1000 / (4 + currentLevel);
+    intervalId = setInterval(moveCurrentPieceDownAndRefresh, currentSpeed);
   }
 }
 
@@ -349,7 +351,7 @@ $(document).bind('keydown', function(e) {
       clearInterval(intervalId);
       gamePaused = true;
     } else {
-      intervalId = setInterval(moveCurrentPieceDownAndRefresh, 200);
+      intervalId = setInterval(moveCurrentPieceDownAndRefresh, currentSpeed);
       gamePaused = false;
     }
   }
@@ -388,5 +390,5 @@ $(document).bind('keydown', function(e) {
 
 initializeGame();
 createNewPiece();
-intervalId = setInterval(moveCurrentPieceDownAndRefresh, 200);
+intervalId = setInterval(moveCurrentPieceDownAndRefresh, currentSpeed);
 
