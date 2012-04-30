@@ -1,3 +1,5 @@
+// Barebone DOM tetris. Speed may be a little too much for beginners, feel free to adjust the code !
+
 var containerId = '#gameContainer', scoreContainerId = '#scoreContainer', lineCountContainerId = '#lineCountContainer', levelContainerId = '#levelContainer'
   , matrixWidth = 10, matrixHeight = 20     // Measured in number of minos
   , minoWidth = 8, minoHeight = 8           // Measured in pixels
@@ -5,7 +7,7 @@ var containerId = '#gameContainer', scoreContainerId = '#scoreContainer', lineCo
   , HUDLeftOffset = 20, HUDTopOffset = 60, HUDLineOffset = 20;
 
 var displayBox = $(containerId), scoreBox = $(scoreContainerId), lineCountBox = $(lineCountContainerId), levelBox = $(levelContainerId)
-  , matrixState = [], score = 0, lineCount = 0, currentLevel = 1, intervalId, gamePaused = false, i, j;
+  , matrixState = [], score = 0, lineCount = 0, currentLevel = 1, intervalId, gamePaused = false, gameFinished = false, i, j;
 
 var pieces = [ [{x: 0, y: 0}, {x: -1, y: 0}, {x: 1, y: 0}, {x: 0, y: 1}]        // T
              , [{x: 0, y: 0}, {x: -1, y: 0}, {x: 2, y: 0}, {x: 1, y: 0}]        // Bar
@@ -96,6 +98,12 @@ var createNewPiece = function() {
   currentPiece.rotation = nextPiece.rotation;
   currentPiece.minos = nextPiece.minos;
   refreshCurrentPieceDisplay();
+
+  if (currentPieceCantMoveAnymore()) {
+    clearInterval(intervalId);
+    gameFinished = true;
+    alert('Game finished');
+  }
 
   createNextPiece();
 }
@@ -316,13 +324,9 @@ var updateHUD = function(linesMade) {
 
   if (formerLevel !== currentLevel) {
     clearInterval(intervalId);
-    intervalId = setInterval(moveCurrentPieceDownAndRefresh, 200 / (currentLevel));
+    intervalId = setInterval(moveCurrentPieceDownAndRefresh, 1000 / (4 + currentLevel));
   }
 }
-
-
-initializeGame();
-createNewPiece();
 
 
 var moveCurrentPieceDownAndRefresh = function() {
@@ -337,11 +341,9 @@ var moveCurrentPieceDownAndRefresh = function() {
 }
 
 
-intervalId = setInterval(moveCurrentPieceDownAndRefresh, 200);
-
-
-
 $(document).bind('keydown', function(e) {
+  if (gameFinished) { return; }   // No action possible after game finishes
+
   if (e.keyCode === 27) {
     if (! gamePaused) {
       clearInterval(intervalId);
@@ -384,4 +386,7 @@ $(document).bind('keydown', function(e) {
 });
 
 
+initializeGame();
+createNewPiece();
+intervalId = setInterval(moveCurrentPieceDownAndRefresh, 200);
 
