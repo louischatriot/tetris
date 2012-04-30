@@ -1,13 +1,13 @@
 // Barebone DOM tetris. Speed may be a little too much for beginners, feel free to adjust the code !
 
-var containerId = '#gameContainer', scoreContainerId = '#scoreContainer', lineCountContainerId = '#lineCountContainer', levelContainerId = '#levelContainer'
+var containerId = '#gameContainer', scoreContainerId = '#scoreContainer', lineCountContainerId = '#lineCountContainer', levelContainerId = '#levelContainer', piecePreviewId = '#piecePreviewContainer'
   , matrixWidth = 10, matrixHeight = 20     // Measured in number of minos
   , minoWidth = 8, minoHeight = 8           // Measured in pixels
   , leftZero = 120, topZero = 20
-  , HUDLeftOffset = 20, HUDTopOffset = 60, HUDLineOffset = 20
+  , HUDLeftOffset = 20, HUDTopOffset = 32, HUDLineOffset = 20
   , currentSpeed = 200;
 
-var displayBox = $(containerId), scoreBox = $(scoreContainerId), lineCountBox = $(lineCountContainerId), levelBox = $(levelContainerId)
+var displayBox = $(containerId), scoreBox = $(scoreContainerId), lineCountBox = $(lineCountContainerId), levelBox = $(levelContainerId), piecePreviewBox = $(piecePreviewContainer)
   , matrixState = [], score = 0, lineCount = 0, currentLevel = 1, intervalId, gamePaused = false, gameFinished = false, inBlockZone = false, i, j;
 
 var pieces = [ [{x: 0, y: 0}, {x: -1, y: 0}, {x: 1, y: 0}, {x: 0, y: 1}]        // T
@@ -42,10 +42,12 @@ var initializeGame = function() {
   scoreBox.css('left', leftZero + matrixWidth * minoWidth + HUDLeftOffset);
   lineCountBox.css('left', leftZero + matrixWidth * minoWidth + HUDLeftOffset);
   levelBox.css('left', leftZero + matrixWidth * minoWidth + HUDLeftOffset);
+  piecePreviewBox.css('left', leftZero + matrixWidth * minoWidth + HUDLeftOffset);
 
-  scoreBox.css('top', topZero + HUDTopOffset);
-  lineCountBox.css('top', topZero + HUDTopOffset + HUDLineOffset);
-  levelBox.css('top', topZero + HUDTopOffset + 2 * HUDLineOffset);
+  piecePreviewBox.css('top', topZero + HUDTopOffset);
+  scoreBox.css('top', topZero + HUDTopOffset + 2 * HUDLineOffset);
+  lineCountBox.css('top', topZero + HUDTopOffset + 3 * HUDLineOffset);
+  levelBox.css('top', topZero + HUDTopOffset + 4 * HUDLineOffset);
 
   createNextPiece();
 }

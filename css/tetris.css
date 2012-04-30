@@ -60,3 +60,10 @@
   font-family: 'Verdana';
   font-size: 10px;
 }
+
+
+#piecePreviewContainer {
+  position: absolute;
+  font-family: 'Verdana';
+  font-size: 7px;
+}
