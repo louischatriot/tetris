@@ -2,7 +2,7 @@ var containerId = '#gameContainer', scoreContainerId = '#scoreContainer', lineCo
   , matrixWidth = 10, matrixHeight = 20     // Measured in number of minos
   , minoWidth = 8, minoHeight = 8           // Measured in pixels
   , leftZero = 120, topZero = 20
-  , HUDLeftOffset = 20, HUDTopOffset = 20, HUDLineOffset = 20;
+  , HUDLeftOffset = 20, HUDTopOffset = 60, HUDLineOffset = 20;
 
 var displayBox = $(containerId), scoreBox = $(scoreContainerId), lineCountBox = $(lineCountContainerId), levelBox = $(levelContainerId)
   , matrixState = [], score = 0, lineCount = 0, currentLevel = 1, intervalId, gamePaused = false, i, j;
@@ -17,6 +17,7 @@ var pieces = [ [{x: 0, y: 0}, {x: -1, y: 0}, {x: 1, y: 0}, {x: 0, y: 1}]        
 
   , squareType = 6    // Used to prevent the square from rotating
   , currentPiece = {type: 0, centerX: 0, centerY: 0, rotation: [], minos: []}
+  , nextPiece = {type: 0, centerX: 0, centerY: 0, rotation: [], minos: []}
   , scorePerNumberOfLines = [0, 80, 200, 400, 1000];
 
 
@@ -42,6 +43,8 @@ var initializeGame = function() {
   scoreBox.css('top', topZero + HUDTopOffset);
   lineCountBox.css('top', topZero + HUDTopOffset + HUDLineOffset);
   levelBox.css('top', topZero + HUDTopOffset + 2 * HUDLineOffset);
+
+  createNextPiece();
 }
 
 
@@ -57,29 +60,44 @@ var placeMino = function(mino, place) {
   mino.css('top', getTop( getActualYCoord(place) ));
 }
 
+var placeNextMino = function(mino, place) {
+  mino.css('left', getLeft( nextPiece.centerX + place.x ));
+  mino.css('top', getTop( nextPiece.centerY + place.y ));
+}
 
-// After last piece was placed, create a new one on top of the matrix
-var createNewPiece = function() {
+var createNextPiece = function() {
   var temp;
 
-  // Re-initialize currentPiece
-  currentPiece.type = Math.floor(Math.random() * pieces.length);
-  currentPiece.centerX = Math.floor(matrixWidth / 2);
-  currentPiece.centerY = 1;
-  currentPiece.minos = [];
-  currentPiece.rotation = [];
+  // Re-initialize nextPiece
+  nextPiece.type = Math.floor(Math.random() * pieces.length);
+  nextPiece.centerX = matrixWidth + 5;
+  nextPiece.centerY = 1;
+  nextPiece.minos = [];
+  nextPiece.rotation = [];
 
-  for (i = 0; i < pieces[currentPiece.type].length; i += 1) {
+  for (i = 0; i < pieces[nextPiece.type].length; i += 1) {
     temp = $(document.createElement('div'));
-    temp.attr('class', 'piece' + currentPiece.type);
+    temp.attr('class', 'piece' + nextPiece.type);
     temp.css('width', minoWidth);
     temp.css('height', minoHeight);
 
-    placeMino(temp, pieces[currentPiece.type][i]);
+    placeNextMino(temp, pieces[nextPiece.type][i]);
     displayBox.append(temp);
-    currentPiece.minos.push(temp);    // The minos array is in the same order as currentPiece.rotation
-    currentPiece.rotation.push( {x: pieces[currentPiece.type][i].x, y: pieces[currentPiece.type][i].y} );
+    nextPiece.minos.push(temp);    // The minos array is in the same order as nextPiece.rotation
+    nextPiece.rotation.push( {x: pieces[nextPiece.type][i].x, y: pieces[nextPiece.type][i].y} );
   }
+}
+
+// After last piece was placed, create a new one on top of the matrix
+var createNewPiece = function() {
+  currentPiece.type = nextPiece.type;
+  currentPiece.centerX = Math.floor(matrixWidth / 2);
+  currentPiece.centerY = nextPiece.centerY;
+  currentPiece.rotation = nextPiece.rotation;
+  currentPiece.minos = nextPiece.minos;
+  refreshCurrentPieceDisplay();
+
+  createNextPiece();
 }
 
 
@@ -288,13 +306,13 @@ var updateHUD = function(linesMade) {
   var formerLevel = currentLevel;
 
   lineCount += linesMade;
-  $('#lineCountContainer').html('Lines: ' + lineCount);
+  lineCountBox.html('Lines: ' + lineCount);
 
   currentLevel = Math.floor(lineCount / 10) + 1;
-  $('#levelContainer').html('Level: ' + currentLevel);
+  levelBox.html('Level: ' + currentLevel);
 
   score += currentLevel * scorePerNumberOfLines[linesMade];
-  $('#scoreContainer').html('Score: ' + score);
+  scoreBox.html('Score: ' + score);
 
   if (formerLevel !== currentLevel) {
     clearInterval(intervalId);
