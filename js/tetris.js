@@ -76,7 +76,7 @@ var createNextPiece = function() {
   // Re-initialize nextPiece
   nextPiece.type = Math.floor(Math.random() * pieces.length);
   nextPiece.centerX = matrixWidth + 5;
-  nextPiece.centerY = 1;
+  nextPiece.centerY = 0;
   nextPiece.minos = [];
   nextPiece.rotation = [];
 
