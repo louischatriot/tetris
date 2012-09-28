@@ -1,4 +1,5 @@
 // Barebone DOM tetris. Speed may be a little too much for beginners, feel free to adjust the code !
+// Code is not optimized (just look at all these non localized global variables ...), not beautiful.
 
 var containerId = '#gameContainer', scoreContainerId = '#scoreContainer', lineCountContainerId = '#lineCountContainer', levelContainerId = '#levelContainer', piecePreviewId = '#piecePreviewContainer'
   , matrixWidth = 10, matrixHeight = 20     // Measured in number of minos
