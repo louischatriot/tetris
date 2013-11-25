@@ -6,7 +6,7 @@ var containerId = '#gameContainer', scoreContainerId = '#scoreContainer', lineCo
   , minoWidth = 8, minoHeight = 8           // Measured in pixels
   , leftZero = 120, topZero = 20
   , HUDLeftOffset = 20, HUDTopOffset = 32, HUDLineOffset = 20
-  , initialSpeed = 200;
+  , initialSpeed = 80;
 
 var displayBox = $(containerId), scoreBox = $(scoreContainerId), lineCountBox = $(lineCountContainerId), levelBox = $(levelContainerId), piecePreviewBox = $(piecePreviewContainer)
   , matrixState = [], score = 0, lineCount = 0, currentLevel = 1, intervalId, gamePaused = false, gameFinished = false, inBlockZone = false, currentSpeed = initialSpeed, i, j;
