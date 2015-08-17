@@ -25,7 +25,7 @@
     Piece preview
   </div>
 
-  <div id="pauseContainer"></div>
+  <div id="pauseContainer">ffff</div>
 
   <script type="text/javascript" src="js/underscore-min.js"></script>
   <script type="text/javascript" src="js/jquery-1.7.2.js"></script>

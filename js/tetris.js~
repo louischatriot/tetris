@@ -380,9 +380,9 @@ $(document).bind('keydown', function(e) {
       if (! gamePaused) {
         clearInterval(intervalId);
         gamePaused = true;
-        pauseBox.html('PAUSED');
       } else {
         gameUnpausing = true;
+        pauseBox.html('PAUSED');
         unpauseCountdown(3);
       }
     }
