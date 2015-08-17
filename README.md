@@ -11,4 +11,4 @@ A small DOM tetris game, tailored to my tastes. Control are the usual:
 
 Reload the page to play again.  
 
-I just built it for fun, code is neither optimized (take a look at all these globals I use ...) nor beautiful. But it does work! There is a weird graphical bug that happens rarely and that I don't have time to correct.
+I just built it for fun, code is neither optimized (take a look at all these globals I use ...) nor beautiful (let's be honnest it's downright ugly). But it does work! There is a weird graphical bug that happens rarely and that I don't have time to correct.
